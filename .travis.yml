@@ -1,0 +1,57 @@
+dist: xenial
+language: python
+python: 3.7
+services:
+  - docker
+branches:
+  only:
+    - master
+stages:
+  - lint
+  - test
+  - deploy
+jobs:
+  include:
+    - name: lint
+      stage: lint
+      script:
+        - >
+          docker run --rm -v $(pwd):/source -w /source python:3.7-slim bash -c "
+          pip install -e ./[dev];
+          flake8"
+    - name: cpython 3.7
+      stage: test
+      install:
+        - pip install codecov
+      script:
+        - >
+          docker run --rm -v $(pwd):/source -w /source python:3.7-slim bash -c "
+          pip install -e ./[dev];
+          pytest"
+      after_success:
+        - codecov
+    - name: cpython 3.8
+      stage: test
+      install:
+        - pip install codecov
+      script:
+        - >
+          docker run --rm -v $(pwd):/source -w /source python:3.8-slim bash -c "
+          pip install -e ./[dev];
+          pytest"
+      after_success:
+        - codecov
+    - name: deploy
+      stage: deploy
+      script:
+        - echo "deploy"
+      deploy:
+        provider: pypi
+        username: __token__
+        password:
+          secure: "Kn38wqX2sXX0wHGVOUBy9g6HF+T2oAjwQIGjmDl0dfOpSgGfE/rpbgob9LynbIOfY4EcJdsCK/jgOJHxW4A9SZe0eK+EpctG7lITCZbDE1nHXTixLavSXBoAhL3F82iwXUimnT/ASjVBcmzxj5M3QpxP8txfe1qdBu0U3+JJT0eqwlDEl9eJMUGwMZTwj646LwN4R1WmFUDo3GuenSPA2EN/l0ztnN6plE7/JojFGNhpdDrvb6qRmhThSQTPOyqMhlN3oOQtBwKKRU6IbCMHDGj0XXekmY/OhWEoXeQVtq2GpxKaB1EB/piX26w3co/Rae6aRYGs1twVkzhxQHXhtcRgCeorImnr+xnYWV61JGKgM+/rje9VqZ6Zenibmjz+5lzqRWxPliIzu2lI3jlNr7F8NNIz2teP9cq8P1ufru3r/FH0UPntEGVQKHfYYZYSWcAHEFefmIE1mAYzk4FffZP8s0P2YftMeH4MZzH9EKNwxkawcz3jhq19WA7Q62WsHqoex5dwu0NpZc+4J0Xhk+vn6IvYLqBEVvY1muXfhcNuj1V5apolSHWMNSTKiJyflTOCS+U/+d2WdKdoUYpgAbfo0ccd5uJ3wlT8QY6pMBpA071oBz9c0EgPVp8MtPY/wPcCevb/v/TU0P4dI9Lfdn5B/MhjJLjSbgqT8sml5kE="
+        distributions: sdist bdist_wheel
+        skip_existing: true
+        cleanup: false
+        on:
+          branch: master
