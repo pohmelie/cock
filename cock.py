@@ -14,26 +14,28 @@ version = tuple(map(int, __version__.split(".")))
 
 def _gen_flat(d: dict, *, prefix="") -> dict:
     for k, v in d.items():
-        current_prefix = "_".join(v for v in (prefix, k) if v)
+        current_prefix = "-".join(v for v in (prefix, k) if v)
         if isinstance(v, dict):
             yield from _gen_flat(v, prefix=current_prefix)
         else:
-            yield current_prefix.replace("-", "_"), v
+            yield current_prefix, v
 
 
-def build_config(cli_options: dict) -> AdDict:
-    file_options = {}
-    if cli_options["configuration_file"]:
-        path = Path(cli_options["configuration_file"])
-        raw = yaml.safe_load(path.read_text())
-        pairs = list(_gen_flat(raw))
-        viewed = set()
-        for k, _ in pairs:
-            if k in viewed:
-                raise ValueError(f"Key {k!r} already exist")
-            viewed.add(k)
-        file_options = dict(pairs)
-    return AdDict(**ChainMap(file_options, cli_options))
+def _build_file_args(configuration_file: Path) -> AdDict:
+    file_options = []
+    raw = yaml.safe_load(configuration_file.read_text())
+    pairs = list(_gen_flat(raw))
+    viewed = set()
+    for k, v in pairs:
+        if k in viewed:
+            raise ValueError(f"Key {k!r} already exist")
+        viewed.add(k)
+        file_options.extend([f"--{k}", v])
+    return file_options
+
+
+def _decorate(decorators, f):
+    return reduce(lambda f, d: d(f), decorators, f)
 
 
 def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
@@ -46,8 +48,14 @@ def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
     decorators.extend(options)
 
     def entrypoint(**cli_options):
-        config = build_config(cli_options)
+        file_options = {}
+        configuration_file = cli_options["configuration_file"]
+        if configuration_file:
+            file_args = _build_file_args(Path(configuration_file))
+            collector = _decorate(decorators, lambda **options: options)
+            file_options = collector.main(args=file_args, standalone_mode=False)
+        config = AdDict(**ChainMap(file_options, cli_options))
         return main(config)
 
-    decorated_entrypoint = reduce(lambda f, d: d(f), decorators, entrypoint)
+    decorated_entrypoint = _decorate(decorators, entrypoint)
     return decorated_entrypoint

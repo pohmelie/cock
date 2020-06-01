@@ -11,6 +11,7 @@ No module for click with flat configuration file, which will mimic actual click 
 
 # Features
 - Aggregate configuration file and cli options into flat configuration object.
+- Respect all click checks and conversions.
 - Flat dot-accessed ([`addict`](https://pypi.org/project/addict) wrapped) configuration.
 - Entrypoint builder.
 

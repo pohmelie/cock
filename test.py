@@ -39,7 +39,7 @@ def test_config(runner, tmp_path):
           b:
             c: abc-config
         b-c:
-          d: 667
+          d: "667"
     """))
     runner.invoke(ep, [str(config_path)], catch_exceptions=False)
 
