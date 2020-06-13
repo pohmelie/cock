@@ -24,13 +24,15 @@ def _gen_flat(d: dict, *, prefix="") -> dict:
 def _build_file_args(configuration_file: Path) -> AdDict:
     file_options = []
     raw = yaml.safe_load(configuration_file.read_text())
-    pairs = list(_gen_flat(raw))
     viewed = set()
-    for k, v in pairs:
+    for k, v in _gen_flat(raw):
         if k in viewed:
             raise ValueError(f"Key {k!r} already exist")
         viewed.add(k)
-        file_options.extend([f"--{k}", v])
+        if not isinstance(v, list):
+            v = [v]
+        for lv in v:
+            file_options.extend([f"--{k}", lv])
     return file_options
 
 
