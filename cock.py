@@ -8,7 +8,7 @@ import yaml
 from addict import Dict as AdDict
 
 __all__ = ("build_entrypoint",)
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 version = tuple(map(int, __version__.split(".")))
 
 
