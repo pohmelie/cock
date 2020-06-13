@@ -55,7 +55,7 @@ def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
         if configuration_file:
             file_args = _build_file_args(Path(configuration_file))
             collector = _decorate(decorators, lambda **options: options)
-            file_options = collector.main(args=file_args, standalone_mode=False)
+            file_options = collector.main(args=file_args, standalone_mode=False, **context_settings)
         config = AdDict(**ChainMap(file_options, cli_options))
         return main(config)
 
