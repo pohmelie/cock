@@ -4,7 +4,7 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from cock import build_entrypoint, Option
+from cock import build_entrypoint, build_options_from_dict, Option
 
 
 @pytest.fixture(scope="function")
@@ -76,7 +76,7 @@ def test_dictinary_configuration(runner):
             },
         },
     }
-    ep = build_entrypoint(main, dict_options)
+    ep = build_entrypoint(main, build_options_from_dict(dict_options))
     runner.invoke(ep)
 
 
@@ -91,4 +91,4 @@ def test_dictinary_configuration_fail(runner):
         },
     }
     with pytest.raises(ValueError):
-        build_entrypoint(main, dict_options)
+        build_entrypoint(main, build_options_from_dict(dict_options))

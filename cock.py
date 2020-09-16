@@ -7,7 +7,7 @@ import click
 import yaml
 from addict import Dict as AdDict
 
-__all__ = ("build_entrypoint", "Option")
+__all__ = ("build_entrypoint", "build_options_from_dict", "Option")
 __version__ = "0.5.0"
 version = tuple(map(int, __version__.split(".")))
 
@@ -57,15 +57,17 @@ def _gen_dict_options(options: dict, *, subpath=()):
             raise ValueError(f"Expect dict or option, got {value!r}")
 
 
-def build_entrypoint(main: Callable[[AdDict], Any], options: Union[List[click.option], Dict],
+def build_options_from_dict(options: dict):
+    return list(_gen_dict_options(options))
+
+
+def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
                      **context_settings) -> Callable[..., Any]:
     decorators = [
         click.command(context_settings=context_settings),
         click.argument("configuration-file", default=None, required=False,
                        type=click.Path(exists=True, dir_okay=False, readable=True, resolve_path=True))
     ]
-    if isinstance(options, dict):
-        options = list(_gen_dict_options(options))
     decorators.extend(options)
 
     def entrypoint(**cli_options):

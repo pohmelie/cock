@@ -105,9 +105,7 @@ Then `ValueError` will be raised.
 
 Configuration can be defined as dictionary too
 ``` python
-import click
-
-from cock import build_entrypoint, Option
+from cock import build_entrypoint, build_options_from_dict, Option
 
 
 def main(config):
@@ -121,7 +119,7 @@ options = {
         },
     },
 }
-entrypoint = build_entrypoint(main, options, auto_envvar_prefix="EXAMPLE", show_default=True)
+entrypoint = build_entrypoint(main, build_options_from_dict(options), auto_envvar_prefix="EXAMPLE", show_default=True)
 
 if __name__ == "__main__":
     entrypoint(prog_name="example")
