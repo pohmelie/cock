@@ -1,14 +1,14 @@
 from collections import ChainMap
 from functools import reduce
 from pathlib import Path
-from typing import Any, Callable, List, Dict, Union
+from typing import Any, Callable, List
 
 import click
 import yaml
 from addict import Dict as AdDict
 
 __all__ = ("build_entrypoint", "build_options_from_dict", "Option")
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 version = tuple(map(int, __version__.split(".")))
 
 
