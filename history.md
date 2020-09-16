@@ -1,5 +1,8 @@
 # x.x.x (xx-xx-xxxx)
 
+# 0.5.0 (16-09-2020)
+- add `dict` style options
+
 # 0.4.0 (13-06-2020)
 - respect context settings when generating file options
 
