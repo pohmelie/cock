@@ -103,6 +103,30 @@ Then `ValueError` will be raised.
 
 `cock` uses `pyyaml` library for config loading, so it supports `yaml` and `json` formats, but this can be improved later if someone will need more configuration file types.
 
+Configuration can be defined as dictionary too
+``` python
+import click
+
+from cock import build_entrypoint, Option
+
+
+def main(config):
+    print(config)
+
+
+options = {
+    "a": {
+        "b": {
+            "c": Option(default="foo"),
+        },
+    },
+}
+entrypoint = build_entrypoint(main, options, auto_envvar_prefix="EXAMPLE", show_default=True)
+
+if __name__ == "__main__":
+    entrypoint(prog_name="example")
+```
+
 # API
 ``` python
 def build_entrypoint(

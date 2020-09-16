@@ -4,7 +4,7 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from cock import build_entrypoint
+from cock import build_entrypoint, Option
 
 
 @pytest.fixture(scope="function")
@@ -64,3 +64,31 @@ def test_config_duplicate(runner, tmp_path):
     """))
     with pytest.raises(ValueError):
         runner.invoke(ep, [str(config_path)], catch_exceptions=False)
+
+
+def test_dictinary_configuration(runner):
+    def main(config):
+        assert config.a_b_c == "abc_default"
+    dict_options = {
+        "a": {
+            "b": {
+                "c": Option(default="abc-default"),
+            },
+        },
+    }
+    ep = build_entrypoint(main, dict_options)
+    runner.invoke(ep)
+
+
+def test_dictinary_configuration_fail(runner):
+    def main(config):
+        assert config.a_b_c == "abc_default"
+    dict_options = {
+        "a": {
+            "b": {
+                "c": "fail",
+            },
+        },
+    }
+    with pytest.raises(ValueError):
+        build_entrypoint(main, dict_options)
