@@ -1,3 +1,9 @@
+# x.x.x (xx-xx-xxxx)
+
+# 0.8.0 (15-01-2020)
+- add information about `Config` to readme
+- add missed wild import of `Config`
+
 # 0.7.0 (15-01-2020)
 - replace `addict` with `sortedcontainers`
 
