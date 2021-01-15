@@ -7,7 +7,7 @@ import click
 import yaml
 from sortedcontainers import SortedDict
 
-__all__ = ("build_entrypoint", "build_options_from_dict", "Option")
+__all__ = ("build_entrypoint", "build_options_from_dict", "Option", "Config")
 __version__ = "0.7.0"
 version = tuple(map(int, __version__.split(".")))
 
