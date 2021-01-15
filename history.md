@@ -1,4 +1,8 @@
-# x.x.x (xx-xx-xxxx)
+# 0.7.0 (15-01-2020)
+- replace `addict` with `sortedcontainers`
+
+# 0.6.0 (16-09-2020)
+- add `build_options_from_dict`
 
 # 0.5.0 (16-09-2020)
 - add `dict` style options
