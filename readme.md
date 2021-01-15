@@ -12,7 +12,7 @@ No module for click with flat configuration file, which will mimic actual click 
 # Features
 - Aggregate configuration file and cli options into flat configuration object.
 - Respect all click checks and conversions.
-- Dict-like, flat, sorted, dot-accessed configuration object.
+- `dict`-like, flat, sorted, dot-accessed configuration object.
 - Entrypoint builder.
 
 # License
@@ -26,10 +26,10 @@ No module for click with flat configuration file, which will mimic actual click 
 ``` python
 import click
 
-from cock import build_entrypoint
+from cock import build_entrypoint, Config
 
 
-def main(config):
+def main(config: Config):
     print(config)
 
 
@@ -105,10 +105,10 @@ Then `ValueError` will be raised.
 
 Configuration can be defined as dictionary too
 ``` python
-from cock import build_entrypoint, build_options_from_dict, Option
+from cock import build_entrypoint, build_options_from_dict, Option, Config
 
 
-def main(config):
+def main(config: Config):
     print(config)
 
 
@@ -123,6 +123,23 @@ entrypoint = build_entrypoint(main, build_options_from_dict(options), auto_envva
 
 if __name__ == "__main__":
     entrypoint(prog_name="example")
+```
+
+`Config` is an extended (with dot-access) version of `sortedcontainers.SortedDict`
+``` python
+>>> from cock import Config
+>>> c = Config(b=1, a=2)
+Config({'a': 2, 'b': 1})
+>>> c["a"], c.b
+(2, 1)
+>>> c.z
+...
+KeyError: 'z'
+>>> c.items()
+SortedItemsView(Config({'a': 2, 'b': 1}))
+>>> c["0"] = 0
+>>> c
+Config({'0': 0, 'a': 2, 'b': 1})
 ```
 
 # API
