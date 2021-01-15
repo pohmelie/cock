@@ -5,11 +5,17 @@ from typing import Any, Callable, List
 
 import click
 import yaml
-from addict import Dict as AdDict
+from sortedcontainers import SortedDict
 
 __all__ = ("build_entrypoint", "build_options_from_dict", "Option")
 __version__ = "0.6.0"
 version = tuple(map(int, __version__.split(".")))
+
+
+class Config(SortedDict):
+
+    def __getattr__(self, name: str) -> Any:
+        return self[name]
 
 
 def _gen_flat(d: dict, *, prefix="") -> dict:
@@ -21,7 +27,7 @@ def _gen_flat(d: dict, *, prefix="") -> dict:
             yield current_prefix, v
 
 
-def _build_file_args(configuration_file: Path) -> AdDict:
+def _build_file_args(configuration_file: Path) -> List[Any]:
     file_options = []
     raw = yaml.safe_load(configuration_file.read_text())
     viewed = set()
@@ -61,7 +67,7 @@ def build_options_from_dict(options: dict):
     return list(_gen_dict_options(options))
 
 
-def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
+def build_entrypoint(main: Callable[[Config], Any], options: List[click.option],
                      **context_settings) -> Callable[..., Any]:
     decorators = [
         click.command(context_settings=context_settings),
@@ -77,7 +83,7 @@ def build_entrypoint(main: Callable[[AdDict], Any], options: List[click.option],
             file_args = _build_file_args(Path(configuration_file))
             collector = _decorate(decorators, lambda **options: options)
             file_options = collector.main(args=file_args, standalone_mode=False, **context_settings)
-        config = AdDict(**ChainMap(file_options, cli_options))
+        config = Config(**ChainMap(file_options, cli_options))
         return main(config)
 
     decorated_entrypoint = _decorate(decorators, entrypoint)
