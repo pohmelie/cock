@@ -83,6 +83,7 @@ def build_entrypoint(main: Callable[[Config], Any], options: List[click.option],
             file_args = _build_file_args(Path(configuration_file))
             collector = _decorate(decorators, lambda **options: options)
             file_options = collector.main(args=file_args, standalone_mode=False, **context_settings)
+            file_options["configuration_file"] = configuration_file
         config = Config(**ChainMap(file_options, cli_options))
         return main(config)
 

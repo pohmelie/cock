@@ -35,6 +35,7 @@ def test_config(runner, tmp_path):
         assert config.a_b_c == "abc-config"
         assert config.b_c_d == 667
         assert config.c_d_e == ("a", "b")
+        assert config.configuration_file == str(config_path)
     config_path = tmp_path / "config.yml"
     ep = build_entrypoint(main, options)
     config_path.write_text(dedent("""\
