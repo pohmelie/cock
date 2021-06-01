@@ -1,10 +1,13 @@
 # x.x.x (xx-xx-xxxx)
 
-# 0.8.0 (15-01-2020)
+# 0.9.0 (01-06-2021)
+- propagate `configuration_file` value
+
+# 0.8.0 (15-01-2021)
 - add information about `Config` to readme
 - add missed wild import of `Config`
 
-# 0.7.0 (15-01-2020)
+# 0.7.0 (15-01-2021)
 - replace `addict` with `sortedcontainers`
 
 # 0.6.0 (16-09-2020)
