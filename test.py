@@ -4,7 +4,7 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from cock import build_entrypoint, build_options_from_dict, Option
+from cock import build_entrypoint, build_options_from_dict, get_options_defaults, Option
 
 
 @pytest.fixture(scope="function")
@@ -93,3 +93,33 @@ def test_dictinary_configuration_fail(runner):
     }
     with pytest.raises(ValueError):
         build_entrypoint(main, build_options_from_dict(dict_options))
+
+
+def test_dictinary_defaults():
+    dict_options = {
+        "b": {
+            "c": Option(),
+        },
+        "a": {
+            "b": {
+                "c": Option(default="abc-default"),
+            },
+        },
+    }
+    config = get_options_defaults(dict_options)
+    assert config == {
+        "a_b_c": "abc-default",
+    }
+
+
+def test_dictinary_defaults_fail():
+    dict_options = {
+        "a_b_c": Option(default="foo"),
+        "a": {
+            "b": {
+                "c": Option(default="abc-default"),
+            },
+        },
+    }
+    with pytest.raises(ValueError):
+        get_options_defaults(dict_options)

@@ -125,6 +125,22 @@ if __name__ == "__main__":
     entrypoint(prog_name="example")
 ```
 
+You can also gather all defaults from dictionary defined options as a `Config`
+``` python
+from cock import get_options_defaults, Option
+
+options = {
+    "a": {
+        "b": {
+            "c": Option(default="foo"),
+        },
+    },
+}
+config = get_options_defaults(options)
+assert config == {"a_b_c": "foo"}
+assert config.a_b_c == "foo"
+```
+
 `Config` is an extended (with dot-access) version of `sortedcontainers.SortedDict`
 ``` python
 >>> from cock import Config

@@ -7,7 +7,7 @@ import click
 import yaml
 from sortedcontainers import SortedDict
 
-__all__ = ("build_entrypoint", "build_options_from_dict", "Option", "Config")
+__all__ = ("build_entrypoint", "build_options_from_dict", "get_options_defaults", "Option", "Config")
 __version__ = "0.9.0"
 version = tuple(map(int, __version__.split(".")))
 
@@ -18,16 +18,16 @@ class Config(SortedDict):
         return self[name]
 
 
-def _gen_flat(d: dict, *, prefix="") -> dict:
+def _gen_flat(d: dict, *, prefix="", separator="-") -> dict:
     for k, v in d.items():
-        current_prefix = "-".join(v for v in (prefix, k) if v)
+        current_prefix = separator.join(v for v in (prefix, k) if v)
         if isinstance(v, dict):
-            yield from _gen_flat(v, prefix=current_prefix)
+            yield from _gen_flat(v, prefix=current_prefix, separator=separator)
         else:
             yield current_prefix, v
 
 
-def _build_file_args(configuration_file: Path) -> List[Any]:
+def _build_file_args(configuration_file: Path) -> list:
     file_options = []
     raw = yaml.safe_load(configuration_file.read_text())
     viewed = set()
@@ -63,8 +63,18 @@ def _gen_dict_options(options: dict, *, subpath=()):
             raise ValueError(f"Expect dict or option, got {value!r}")
 
 
-def build_options_from_dict(options: dict):
+def build_options_from_dict(options: dict) -> list:
     return list(_gen_dict_options(options))
+
+
+def get_options_defaults(options: dict) -> Config:
+    config = Config()
+    for name, option in _gen_flat(options, separator="_"):
+        if "default" in option.arguments:
+            if name in config:
+                raise ValueError(f"Key {name!r} already exist")
+            config[name] = option.arguments["default"]
+    return config
 
 
 def build_entrypoint(main: Callable[[Config], Any], options: List[click.option],
