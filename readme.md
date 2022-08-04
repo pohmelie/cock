@@ -1,5 +1,5 @@
 # Cock
-[![Travis status for master branch](https://travis-ci.com/pohmelie/cock.svg?branch=master)](https://travis-ci.com/pohmelie/cock)
+[Github actions status for master branch](https://github.com/pohmelie/cock/actions/workflows/ci.yml/badge.svg?branch=master)
 [![Codecov coverage for master branch](https://codecov.io/gh/pohmelie/cock/branch/master/graph/badge.svg)](https://codecov.io/gh/pohmelie/cock)
 [![Pypi version](https://img.shields.io/pypi/v/cock.svg)](https://pypi.org/project/cock/)
 [![Pypi downloads count](https://img.shields.io/pypi/dm/cock)](https://pypi.org/project/cock/)
