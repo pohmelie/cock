@@ -1,5 +1,8 @@
 # x.x.x (xx-xx-xxxx)
 
+# 0.10.0 (04-08-2022)
+- add `get_options_defaults`
+
 # 0.9.0 (01-06-2021)
 - propagate `configuration_file` value
 

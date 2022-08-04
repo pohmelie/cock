@@ -8,7 +8,7 @@ import yaml
 from sortedcontainers import SortedDict
 
 __all__ = ("build_entrypoint", "build_options_from_dict", "get_options_defaults", "Option", "Config")
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 version = tuple(map(int, __version__.split(".")))
 
 
