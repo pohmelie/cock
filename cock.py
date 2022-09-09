@@ -49,6 +49,8 @@ def _decorate(decorators, f):
 class Option:
 
     def __init__(self, **arguments):
+        if "required" in arguments:
+            raise ValueError("Required argument is not allowed")
         self.arguments = arguments
 
 

@@ -123,3 +123,8 @@ def test_dictinary_defaults_fail():
     }
     with pytest.raises(ValueError):
         get_options_defaults(dict_options)
+
+
+def test_required_argument():
+    with pytest.raises(ValueError):
+        Option(required=True)
