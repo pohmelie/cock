@@ -11,7 +11,7 @@ No module for click with flat configuration file, which will mimic actual click 
 
 # Features
 - Aggregate configuration file and cli options into flat configuration object.
-- Respect all click checks and conversions (`required` attribute forbidden, since it breaks machinery).
+- Respect all click checks and conversions (`required` attribute forbidden, since it breaks internal logic).
 - `dict`-like, flat, sorted, dot-accessed configuration object.
 - Entrypoint builder.
 
@@ -205,7 +205,7 @@ class Option(
     - `name` can be set only once, further set will lead to exception.
     - `name` field will be converted to «underscore» view (e.g. `a-b_c` internaly will be converted to `a_b_c`).
 - `**attributes` propagated to `click.option` decorator.
-    - `required` attribute forbidden, since it breaks machinery.
+    - `required` attribute forbidden, since it breaks internal logic.
 
 
 # Deprecations and removals
