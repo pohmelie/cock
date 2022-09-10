@@ -19,14 +19,11 @@ No module for click with flat configuration file, which will mimic actual click 
 `cock` is offered under MIT license.
 
 # Requirements
-* python 3.7+
+- python 3.7+
 
 # Usage
-`example.py`:
 ``` python
-import click
-
-from cock import build_entrypoint, Config
+from cock import build_entrypoint, Config, Option
 
 
 def main(config: Config):
@@ -34,15 +31,15 @@ def main(config: Config):
 
 
 options = [
-    click.option("--a-b-c", default="foo"),
-    click.option("--b-c-d", default="bar"),
+    Option("a_b_c", default="foo"),
+    Option("b_c_d", default="bar"),
 ]
 entrypoint = build_entrypoint(main, options, auto_envvar_prefix="EXAMPLE", show_default=True)
 
 if __name__ == "__main__":
     entrypoint(prog_name="example")
 ```
-This is almost pure click setup
+This is almost pure click setup:
 ```
 $ python example.py --help
 Usage: example [OPTIONS] [CONFIGURATION_FILE]
@@ -68,8 +65,7 @@ $ EXAMPLE_A_B_C=foo-env python example.py
 $ EXAMPLE_A_B_C=foo-env python example.py --a-b-c foo-cli
 {'a_b_c': 'foo-cli', 'configuration_file': None, 'b_c_d': 'bar'}
 ```
-### From configuration
-`config-example.yml`:
+### From configuration yaml file
 ``` yaml
 a-b-c: foo-file
 ```
@@ -80,9 +76,11 @@ $ EXAMPLE_A_B_C=foo-env python example.py --a-b-c foo-cli config-example.yml
 
 Priority is obvious: **file > cli arguments > env variables**
 
+**Note**: for file `a-b-c` is the same as `a_b_c` or `a-b_c`. Use whatever you prefer.
+
 As described in features paragraph, configuration is flattened before chaining with click options. So all configuration files listed below are equal:
 ``` yaml
-a-b-c: foo-file
+a_b_c: foo-file
 ```
 ``` yaml
 a:
@@ -95,17 +93,17 @@ a-b:
 ```
 If provided file have key crossings:
 ``` yaml
-a-b-c: foo-file1
+a-b_c: foo-file1
 a:
   b-c: foo-file2
 ```
-Then `ValueError` will be raised.
+Then `RuntimeError` will be raised.
 
 `cock` uses `pyyaml` library for config loading, so it supports `yaml` and `json` formats, but this can be improved later if someone will need more configuration file types.
 
-Configuration can be defined as dictionary too
+Configuration can be defined as dictionary too:
 ``` python
-from cock import build_entrypoint, build_options_from_dict, Option, Config
+from cock import build_entrypoint, Option, Config
 
 
 def main(config: Config):
@@ -118,14 +116,35 @@ options = {
             "c": Option(default="foo"),
         },
     },
+    "a-b_d": Option(default="bar"),
 }
-entrypoint = build_entrypoint(main, build_options_from_dict(options), auto_envvar_prefix="EXAMPLE", show_default=True)
+entrypoint = build_entrypoint(main, options, auto_envvar_prefix="EXAMPLE", show_default=True)
 
 if __name__ == "__main__":
     entrypoint(prog_name="example")
 ```
 
-You can also gather all defaults from dictionary defined options as a `Config`
+**Note**: for dictionaries you can use same rules in naming and structure as for files.
+
+Configuration can be defined as multiple sources:
+``` python
+from cock import build_entrypoint, Option, Config
+
+
+def main(config: Config):
+    print(config)
+
+
+dict_options = {"a-b-c": Option(default="foo")}
+list_options = [Option("b_c-d", default="bar")]
+entrypoint = build_entrypoint(main, dict_options, list_options,
+                              auto_envvar_prefix="EXAMPLE", show_default=True)
+
+if __name__ == "__main__":
+    entrypoint(prog_name="example")
+```
+
+You can also gather all defaults from options as a `Config`:
 ``` python
 from cock import get_options_defaults, Option
 
@@ -141,7 +160,7 @@ assert config == {"a_b_c": "foo"}
 assert config.a_b_c == "foo"
 ```
 
-`Config` is an extended (with dot-access) version of `sortedcontainers.SortedDict`
+`Config` is an extended (with dot-access) version of `sortedcontainers.SortedDict`:
 ``` python
 >>> from cock import Config
 >>> c = Config(b=1, a=2)
@@ -162,10 +181,23 @@ Config({'0': 0, 'a': 2, 'b': 1})
 ``` python
 def build_entrypoint(
     main: Callable[[Config], Any],
-    options: List[click.option],
+    *options_stack: Union[dict, List[Union[Option, click.option]]],
     **context_settings
 ) -> Callable[..., Any]:
 ```
-* `main` is a user-space function of exactly one argument, a dot-accessed config wrapper.
-* `options` is an iterable of `click.option` **decorators**.
-* `**context_settings` is a dict passed through to `command` decorator.
+- `main` is a user-space function of exactly one argument, a dot-accessed config wrapper.
+- `*options_stack` is a sequence of dicts and/or lists described above.
+- `**context_settings` is a dict passed through to `command` decorator.
+
+``` python
+def get_options_defaults(
+    *options_stack: Union[dict, List[Union[Option, click.option]]]
+) -> Config:
+```
+- `*options_stack` is a sequence of dicts and/or lists described above.
+
+# Deprecations and removals
+### `0.11.0`
+Deprecations:
+- Usage of `click.option` as option.
+- `build_options_from_dict` function, since it is obsolete with new api.
