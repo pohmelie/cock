@@ -1,7 +1,7 @@
 from collections import ChainMap
 from functools import reduce
 from pathlib import Path
-from typing import Any, Callable, Iterator, List, Tuple, Union
+from typing import Any, Callable, Iterator, List, Optional, Tuple, Union
 
 import click
 import yaml
@@ -20,7 +20,7 @@ class Config(SortedDict):
 
 class Option:
 
-    def __init__(self, name=None, **attributes):
+    def __init__(self, name: Optional[str] = None, **attributes):
         if "required" in attributes:
             raise ValueError("`required` attribute is not allowed")
         self._name = None

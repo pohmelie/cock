@@ -11,7 +11,7 @@ No module for click with flat configuration file, which will mimic actual click 
 
 # Features
 - Aggregate configuration file and cli options into flat configuration object.
-- Respect all click checks and conversions.
+- Respect all click checks and conversions (`required` attribute forbidden, since it breaks machinery).
 - `dict`-like, flat, sorted, dot-accessed configuration object.
 - Entrypoint builder.
 
@@ -187,7 +187,7 @@ def build_entrypoint(
 ```
 - `main` is a user-space function of exactly one argument, a dot-accessed config wrapper.
 - `*options_stack` is a sequence of dicts and/or lists described above.
-- `**context_settings` is a dict passed through to `command` decorator.
+- `**context_settings` propagated to `click.command` decorator.
 
 ``` python
 def get_options_defaults(
@@ -195,6 +195,18 @@ def get_options_defaults(
 ) -> Config:
 ```
 - `*options_stack` is a sequence of dicts and/or lists described above.
+
+``` python
+class Option(
+    name: Optional[str] = None,
+    **attributes)
+```
+- `name` is a name in resulting `Config` object, which passed to `main`.
+    - `name` can be set only once, further set will lead to exception.
+    - `name` field will be converted to «underscore» view (e.g. `a-b_c` internaly will be converted to `a_b_c`).
+- `**attributes` propagated to `click.option` decorator.
+    - `required` attribute forbidden, since it breaks machinery.
+
 
 # Deprecations and removals
 ### `0.11.0`
