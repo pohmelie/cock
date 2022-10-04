@@ -1,5 +1,9 @@
 # x.x.x (xx-xx-xxxx)
 
+# 0.11.0 (04-10-2022)
+- forbid `required` argument for `Option`
+- refactor `Option` and api to use options stacks and more flexible naming rules
+
 # 0.10.0 (04-08-2022)
 - add `get_options_defaults`
 
